@@ -61,7 +61,9 @@ function getToken(expressionStr) {
             continue;
         }
         if(operations.indexOf(expressionStr[i]) !== -1) {
-            tokens.push(current);
+            if(current.length) {
+                tokens.push(current);
+            }
             tokens.push(expressionStr[i]);
             current = "";
         } else {
@@ -76,6 +78,7 @@ function getToken(expressionStr) {
 }
 
 function eval(expression) {
+    console.log(expression);
     while(expression.length !== 1) {
         //Скобки
         let stack = [];
@@ -84,9 +87,6 @@ function eval(expression) {
 
         let cont = false;
         for(let i = 0; i < expression.length; ++i) {
-            if(write === true) {
-                stack.push(expression[i]);
-            }
             if(expression[i] === "(" || expression[i] === ")") {
                 if(expression[i] === "(") {
                     write = true;
@@ -116,6 +116,9 @@ function eval(expression) {
                 cont = true;
                 break;
             } else if(expression[i] === '/') {
+                if(!parseFloat(expression[i + 1])) {
+                    throw new Error("TypeError: Division by zero.");
+                }
                 expression.splice(i - 1, 3, parseFloat(expression[i - 1]) / parseFloat(expression[i + 1]));
                 cont = true;
                 break;
