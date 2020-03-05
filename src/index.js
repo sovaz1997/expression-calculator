@@ -78,7 +78,10 @@ function getToken(expressionStr) {
 }
 
 function eval(expression) {
-    console.log(expression);
+    if(expression[0] === "(" && expression[-1] === ")") {
+        expression.pop();
+        expression.shift();
+    }
     while(expression.length !== 1) {
         //Скобки
         let stack = [];
@@ -86,18 +89,32 @@ function eval(expression) {
         let from, to;
 
         let cont = false;
+        let depth = 0;
         for(let i = 0; i < expression.length; ++i) {
             if(expression[i] === "(" || expression[i] === ")") {
                 if(expression[i] === "(") {
                     write = true;
-                    from = i;
+                    if(!depth) {
+                        from = i;
+                    }
+
+                    if(depth) {
+                        stack.push(expression[i]);
+                    }
+                    depth++;
                 } else {
-                    write = false;
-                    to = i;
-                    expression.splice(from, to - from + 1, eval(stack));
-                    stack = [];
-                    cont = true;
-                    break;
+                    depth--;
+                    if(!depth) {
+                        write = false;
+                        to = i;
+                        expression.splice(from, to - from + 1, eval(stack)[0]);
+                        stack = [];
+                        cont = true;
+                        
+                        break;
+                    }
+                    
+                    stack.push(expression[i]);
                 }
             } else if(write) {
                 stack.push(expression[i]);
